@@ -1,28 +1,210 @@
 <!DOCTYPE html>
-<html lang="en-US">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Function scope example</title>
-  </head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scenario Demo - Kickoff Meeting</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+      color: #222;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      background: #fafafa;
+    }
+
+    .scenario-text {
+      margin-bottom: 20px;
+      white-space: pre-line;
+    }
+
+    .option-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 10px 0;
+      padding: 14px 16px;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .option-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .feedback {
+      margin-top: 24px;
+      padding: 16px;
+      border-left: 4px solid #666;
+      background: #f5f5f5;
+      border-radius: 6px;
+      display: none;
+      white-space: pre-line;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .secondary-btn {
+      padding: 10px 16px;
+      border: 1px solid #888;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .secondary-btn:hover {
+      background: #f2f2f2;
+    }
+
+    .meta {
+      color: #666;
+      font-size: 15px;
+      margin-top: 0;
+    }
+  </style>
+</head>
 <body>
+  <h1>Scenario-Based Learning Demo</h1>
+  <p class="meta">Project sample: improving client preparation before and after kickoff meetings</p>
+
+  <div class="card">
+    <h2>Scenario 1</h2>
+
+    <div class="scenario-text" id="scenarioText"></div>
+
+    <h2>Decision</h2>
+    <p id="decisionText"></p>
+
+    <div id="optionsContainer"></div>
+
+    <div class="feedback" id="feedbackBox"></div>
+
+    <div class="controls">
+      <button class="secondary-btn" onclick="resetScenario()">Try again</button>
+    </div>
+  </div>
 
   <script>
-    const x = 1;
+    const scenario = {
+      title: "Scenario 1",
+      text:
+`You’re preparing for a kickoff meeting with a new SME client.
 
-    function a() {
-      const y = 2;
+You send the project documentation in advance.
+
+A few minutes later, the client replies:
+“Thanks, I’ll take a look before the meeting.”
+
+You’ve seen this before. Many clients say this but arrive unprepared.`,
+      decision: "What do you write in your follow-up email?",
+      options: [
+        {
+          label: "A",
+          text: "Before our next meeting, please review the summary (pages 2–3) and send one key question or comment. We’ll use this to define the next steps together.",
+          consequence:
+`Before the meeting, the client writes:
+“I have a question about how the testing phase fits into our workflow.”
+
+At the meeting:
+“So based on page 3, I think we need to focus on implementation timing. Is that correct?”`
+        },
+        {
+          label: "B",
+          text: "Before our next meeting, please review pages 2–3. We’ll build on this during our discussion.",
+          consequence:
+`Before the meeting, the client replies:
+“I reviewed the summary. I think the focus is on testing the solution in our workflow.”
+
+At the meeting:
+“From what I understood, the goal is to test the solution and then move to implementation, right?”
+
+When you ask about details, they hesitate:
+“I’m not sure how the timeline fits into this part.”`
+        },
+        {
+          label: "C",
+          text: "Please review the summary before our next meeting and come prepared with your thoughts.",
+          consequence:
+`Before the meeting, the client replies:
+“Thanks, looks good.”
+
+At the meeting:
+“Yes, I looked at it.”
+
+“I think I understand the general idea, but I’m not sure how the steps connect.”`
+        },
+        {
+          label: "D",
+          text: "Thank you for the meeting. I’ll send a summary shortly so we can continue next time.",
+          consequence:
+`No response before the meeting.
+
+At the next meeting:
+“Could you quickly go over what we agreed on last time?”`
+        }
+      ]
+    };
+
+    const scenarioText = document.getElementById("scenarioText");
+    const decisionText = document.getElementById("decisionText");
+    const optionsContainer = document.getElementById("optionsContainer");
+    const feedbackBox = document.getElementById("feedbackBox");
+
+    function renderScenario() {
+      scenarioText.textContent = scenario.text;
+      decisionText.textContent = scenario.decision;
+      optionsContainer.innerHTML = "";
+      feedbackBox.style.display = "none";
+      feedbackBox.textContent = "";
+
+      scenario.options.forEach((option) => {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.innerHTML = "<strong>" + option.label + "</strong> " + option.text;
+        button.onclick = () => showConsequence(option);
+        optionsContainer.appendChild(button);
+      });
     }
 
-    function b() {
-      const z = 3;
+    function showConsequence(option) {
+      feedbackBox.style.display = "block";
+      feedbackBox.textContent = option.consequence;
     }
 
-    function output(value) {
-      const para = document.createElement('p');
-      document.body.appendChild(para);
-      para.textContent = `Value: ${value}`;
+    function resetScenario() {
+      renderScenario();
     }
+
+    renderScenario();
   </script>
 </body>
 </html>
