@@ -231,17 +231,29 @@
       border-bottom: 1px dotted #b22222;
     }
 
-    .hint-box {
+    .hint-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.38);
       display: none;
-      margin: 14px auto 0;
-      padding: 16px;
-      background: #f8f8f8;
-      border-radius: 12px;
-      max-width: 360px;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
     }
 
-    .hint-box.show {
-      display: block;
+    .hint-overlay.show {
+      display: flex;
+    }
+
+    .hint-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 360px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
     }
 
     .hint-box img {
@@ -264,7 +276,7 @@
       object-fit: contain;
     }
 
-    xruction-bar {
+    .instruction-bar {
       display: flex;
       gap: 16px;
       margin-bottom: 16px;
@@ -272,16 +284,17 @@
     }
 
     .inst {
-	  display: inline-flex;
-	  align-items: center;
-	  gap: 6px;
-	  font-size: 15px;
-	  color: #333;
-	  background: #f6f6f6;
-	  padding: 8px 10px;
-	  border-radius: 999px;
-	  border: none;
-	}
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      color: #333;
+      background: #f6f6f6;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+    }
 
     .icon {
       width: 18px;
@@ -315,13 +328,15 @@
           <span class="hint-word" data-help="choose">scegli</span>.
         </p>
 
-        <div id="hintBox" class="hint-box">
-          <img id="hintImage" src="" alt="" />
-          <p id="hintText"></p>
-          <button type="button" onclick="closeHint()" class="btn light icon-btn">
-            <img src="icons/close.png" alt="" class="btn-icon">
-            Chiudi
-          </button>
+        <div id="hintOverlay" class="hint-overlay">
+          <div id="hintBox" class="hint-box">
+            <img id="hintImage" src="" alt="" />
+            <p id="hintText"></p>
+            <button type="button" onclick="closeHint()" class="btn light icon-btn">
+              <img src="icons/close.png" alt="" class="btn-icon">
+              Chiudi
+            </button>
+          </div>
         </div>
 
         <div class="btn-row" style="justify-content:center;">
@@ -338,10 +353,8 @@
         <h2>Mappa di Venezia</h2>
         <p>Scegli il prossimo luogo.</p>
         <div class="map-wrap" id="mapWrap">
-          <img id="mapImage" src="img/carta.html" alt="Mappa di Venezia" />
+          <img id="mapImage" src="img/carta.png" alt="Mappa di Venezia" />
         </div>
-        <div class="small-note">
-      	</div>
       </div>
     </section>
 
@@ -416,26 +429,24 @@
     };
 
     function renderInstructionBar(instructions) {
-  const instructionBar = document.getElementById("instructionBar");
-  instructionBar.innerHTML = "";
+      const instructionBar = document.getElementById("instructionBar");
+      instructionBar.innerHTML = "";
 
-  instructions.forEach(key => {
-    const item = document.createElement("button");
-    item.type = "button";
-    item.className = "inst";
-    item.style.border = "none";
-    item.style.cursor = "pointer";
+      instructions.forEach(key => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "inst";
 
-    let label = "";
-    if (key === "listen") label = "Ascolta";
-    if (key === "look") label = "Guarda";
-    if (key === "choose") label = "Scegli";
+        let label = "";
+        if (key === "listen") label = "Ascolta";
+        if (key === "look") label = "Guarda";
+        if (key === "choose") label = "Scegli";
 
-    item.innerHTML = `<img src="${hintData[key].image}" class="icon" alt=""> ${label}`;
-    item.addEventListener("click", () => showHint(key));
-    instructionBar.appendChild(item);
-  });
-}
+        item.innerHTML = `<img src="${hintData[key].image}" class="icon" alt=""> ${label}`;
+        item.addEventListener("click", () => showHint(key));
+        instructionBar.appendChild(item);
+      });
+    }
 
     const scenes = [
       {
@@ -467,7 +478,7 @@
         title: "Ponte di Rialto",
         text: "Sei vicino al Ponte di Rialto.\nAscolta e scegli la parola giusta.",
         image: "img/rialto.png",
-        audio: "PASTE_AUDIO_URL_FOR_RIALTO_OR_EMPTY",
+        audio: "",
         question: "Quale parola senti?",
         options: [
           { text: "ponte", correct: true, feedback: "Esatto.\nPonte = bridge." },
@@ -505,7 +516,7 @@
         title: "Alla ricezione",
         text: "Sei in albergo.\nLa receptionist ti guarda e aspetta.",
         image: "img/ricezione.png",
-        audio: "PASTE_AUDIO_URL_FOR_HOTEL_DIALOGUE_OR_EMPTY",
+        audio: "",
         question: "Cosa dici?",
         options: [
           { text: "La chiave, per favore.", correct: true, feedback: "Perfetto.\n- Quale camera?\n- La camera 451.\n- Ecco.\n- Grazie.\n- Prego." },
@@ -581,7 +592,7 @@
         title: "Fermata del vaporetto",
         text: "Vai alla fermata del vaporetto.\nDevi capire un numero semplice.",
         image: "img/fermata.png",
-        audio: "PASTE_AUDIO_URL_FOR_NUMBER_OR_EMPTY",
+        audio: "",
         question: "Quale numero senti?",
         options: [
           { text: "tre", correct: true, feedback: "Giusto.\nHai capito il numero." },
@@ -635,7 +646,7 @@
     const startBtn = document.getElementById("startBtn");
     const restartBtn = document.getElementById("restartBtn");
 
-    const hintBox = document.getElementById("hintBox");
+    const hintOverlay = document.getElementById("hintOverlay");
     const hintImage = document.getElementById("hintImage");
     const hintText = document.getElementById("hintText");
 
@@ -644,14 +655,14 @@
     let completedCount = 0;
 
     function closeHint() {
-      hintBox.classList.remove("show");
+      hintOverlay.classList.remove("show");
     }
 
     function showHint(key) {
       if (!hintData[key]) return;
       hintImage.src = hintData[key].image;
       hintText.textContent = hintData[key].text;
-      hintBox.classList.add("show");
+      hintOverlay.classList.add("show");
     }
 
     document.querySelectorAll(".hint-word").forEach(word => {
