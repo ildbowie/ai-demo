@@ -111,21 +111,22 @@
     }
 
     .hotspot {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      background: rgba(178, 34, 34, 0.95);
-      color: white;
-      border: 2px solid white;
-      border-radius: 999px;
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: rgba(178, 34, 34, 0.95);
+  color: white;
+  border: 2px solid white;
+  border-radius: 999px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  opacity: 0.4;
+}
     .hotspot.locked {
       background: rgba(120,120,120,0.85);
       cursor: not-allowed;
+      opacity: 0.4;
     }
 
     .hotspot-label {
@@ -301,6 +302,23 @@
       height: 18px;
       object-fit: contain;
     }
+
+    .arrow {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  animation: bounce 1s infinite;
+  pointer-events: none;
+  color: #b22222;
+  font-size: 64px;
+  text-shadow:
+    0 0 6px white,
+    0 3px 8px rgba(0,0,0,0.5);    
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translate(-50%, -100%); }
+  50% { transform: translate(-50%, -120%); }
+}
 
     @media (max-width: 900px) {
       .scene-layout {
@@ -688,12 +706,26 @@
         if (scene.id.startsWith("camera")) return;
 
         const btn = document.createElement("button");
-        btn.className = `hotspot ${scene.unlocked ? "" : "locked"}`;
-        btn.style.left = `${scene.x}%`;
-        btn.style.top = `${scene.y}%`;
-        btn.title = scene.label;
-        btn.type = "button";
+btn.className = `hotspot ${scene.unlocked ? "" : "locked"}`;
+btn.style.left = `${scene.x}%`;
+btn.style.top = `${scene.y}%`;
+btn.title = scene.label;
+btn.type = "button";
 
+if (scene.unlocked) {
+  btn.addEventListener("click", () => openScene(scene.id));
+
+  // NYÍL hozzáadása az aktív ponthoz
+  const arrow = document.createElement("div");
+  arrow.className = "arrow";
+  arrow.style.left = `${scene.x}%`;
+  arrow.style.top = `${scene.y}%`;
+  arrow.innerHTML = "▼";  
+  mapWrap.appendChild(arrow);
+
+} else {
+  btn.addEventListener("click", () => alert("Questo luogo è ancora bloccato."));
+}
         const label = document.createElement("div");
         label.className = "hotspot-label";
         label.style.left = `${scene.x}%`;
